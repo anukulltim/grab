@@ -1,0 +1,8 @@
+<Application xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="maui_admin_app.Platforms.Windows.App">
+
+    <Application.Resources>
+        <!-- Application-wide resources can be defined here -->
+    </Application.Resources>
+</Application>

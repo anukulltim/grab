@@ -1,0 +1,140 @@
+<div class="ai-monitor-container">
+  <!-- Left Sidebar - 30% -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <h2>AI Agent Monitor</h2>
+      <p class="subtitle">Payment Intelligence Dashboard</p>
+    </div>
+    
+    <nav class="sidebar-nav">
+      <ul class="nav-list">
+        <li *ngFor="let item of sidebarItems" 
+            class="nav-item"
+            [class.active]="selectedItem === item.id"
+            (click)="selectItem(item.id)">
+          <a [routerLink]="item.route" class="nav-link">
+            <span class="nav-icon">{{ item.icon }}</span>
+            <div class="nav-content">
+              <span class="nav-label">{{ item.label }}</span>
+              <span class="nav-count">{{ item.count }}</span>
+            </div>
+          </a>
+        </li>
+      </ul>
+    </nav>
+    
+    <div class="sidebar-footer">
+      <div class="status-indicator">
+        <div class="status-dot online"></div>
+        <span>AI System Online</span>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Right Content Area - 70% -->
+  <div class="content-area">
+    <div class="content-header">
+      <div class="breadcrumb">
+        <span class="breadcrumb-item">AI Monitor</span>
+        <span class="breadcrumb-separator">/</span>
+        <span class="breadcrumb-item active">{{ selectedItem | titlecase }}</span>
+      </div>
+      
+      <div class="content-actions">
+        <button class="btn btn-primary">
+          <span class="btn-icon">🔄</span>
+          Refresh
+        </button>
+        <button class="btn btn-secondary">
+          <span class="btn-icon">📊</span>
+          Export
+        </button>
+        <button class="btn btn-info" (click)="openSearch()">
+          <span class="btn-icon">🔍</span>
+          Search
+        </button>
+      </div>
+    </div>
+    
+    <div class="content-body">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>
+
+<!-- Google-like Search Modal -->
+<div class="search-overlay" *ngIf="showSearchModal" (click)="closeSearch()">
+  <div class="search-container" (click)="$event.stopPropagation()">
+    <div class="search-header">
+      <div class="search-logo">
+        <span class="logo-text">Grab</span>
+        <span class="logo-sub">Search</span>
+      </div>
+      <button class="search-close" (click)="closeSearch()">&times;</button>
+    </div>
+    
+    <div class="search-main">
+      <div class="search-box-container">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input 
+            type="text" 
+            class="search-input" 
+            [(ngModel)]="searchQuery"
+            (keyup.enter)="performSearch()"
+            placeholder="Search incidents, solutions, and analytics..."
+            #searchInput>
+          <button class="voice-search" title="Voice search">🎤</button>
+        </div>
+        
+        <div class="search-buttons">
+          <button class="search-btn" (click)="performSearch()">Search</button>
+          <button class="lucky-btn" (click)="feelingLucky()">I'm Feeling Lucky</button>
+        </div>
+      </div>
+      
+      <div class="search-suggestions" *ngIf="searchSuggestions.length > 0">
+        <div class="suggestion-item" 
+             *ngFor="let suggestion of searchSuggestions" 
+             (click)="selectSuggestion(suggestion)">
+          <span class="suggestion-icon">🔍</span>
+          <span class="suggestion-text">{{ suggestion }}</span>
+        </div>
+      </div>
+      
+      <div class="search-categories">
+        <div class="category-item" (click)="searchCategory('incidents')">
+          <div class="category-icon">🚨</div>
+          <div class="category-title">Incidents</div>
+          <div class="category-desc">Search open and closed incidents</div>
+        </div>
+        
+        <div class="category-item" (click)="searchCategory('solutions')">
+          <div class="category-icon">💡</div>
+          <div class="category-title">Solutions</div>
+          <div class="category-desc">Find AI-powered solutions</div>
+        </div>
+        
+        <div class="category-item" (click)="searchCategory('analytics')">
+          <div class="category-icon">📊</div>
+          <div class="category-title">Analytics</div>
+          <div class="category-desc">View system performance data</div>
+        </div>
+        
+        <div class="category-item" (click)="searchCategory('logs')">
+          <div class="category-icon">📝</div>
+          <div class="category-title">Logs</div>
+          <div class="category-desc">Search system logs</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="search-footer">
+      <div class="footer-links">
+        <a href="#">Advanced Search</a>
+        <a href="#">Search Settings</a>
+        <a href="#">Help</a>
+      </div>
+    </div>
+  </div>
+</div>

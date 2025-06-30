@@ -1,0 +1,167 @@
+<div class="incidents-container">
+  <div class="incidents-header">
+    <div class="header-info">
+      <h3>Open Incidents</h3>
+      <p class="header-description">Active payment system incidents requiring attention</p>
+    </div>
+    
+    <div class="filters">
+      <select [(ngModel)]="filterStatus" (change)="applyFilters()" class="filter-select">
+        <option value="all">All Status</option>
+        <option value="open">Open</option>
+        <option value="in progress">In Progress</option>
+      </select>
+      
+      <select [(ngModel)]="filterSeverity" (change)="applyFilters()" class="filter-select">
+        <option value="all">All Severity</option>
+        <option value="high">High</option>
+        <option value="medium">Medium</option>
+        <option value="low">Low</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="incidents-stats">
+    <div class="stat-card">
+      <div class="stat-number">{{ filteredIncidents.length }}</div>
+      <div class="stat-label">Total Incidents</div>
+    </div>
+    <div class="stat-card high">
+      <div class="stat-number">{{ getCountBySeverity('High') }}</div>
+      <div class="stat-label">High Priority</div>
+    </div>
+    <div class="stat-card medium">
+      <div class="stat-number">{{ getCountBySeverity('Medium') }}</div>
+      <div class="stat-label">Medium Priority</div>
+    </div>
+  </div>
+
+  <div class="incidents-list">
+    <div *ngFor="let incident of filteredIncidents" class="incident-card">
+      <div class="incident-header">
+        <div class="incident-id">{{ incident.id }}</div>
+        <div class="incident-badges">
+          <span class="badge" [ngClass]="getSeverityClass(incident.severity)">
+            {{ incident.severity }}
+          </span>
+          <span class="badge" [ngClass]="getStatusClass(incident.status)">
+            {{ incident.status }}
+          </span>
+        </div>
+      </div>
+      
+      <div class="incident-content">
+        <h4 class="incident-title">{{ incident.title }}</h4>
+        <p class="incident-description">{{ incident.description }}</p>
+        
+        <div class="incident-details">
+          <div class="detail-item">
+            <span class="detail-label">Assigned to:</span>
+            <span class="detail-value">{{ incident.assignedTo }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Created:</span>
+            <span class="detail-value">{{ incident.createdAt }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Impact:</span>
+            <span class="detail-value">{{ incident.estimatedImpact }}</span>
+          </div>
+        </div>
+        
+        <div class="ai-prediction">
+          <div class="ai-icon">🤖</div>
+          <div class="ai-text">
+            <strong>AI Prediction:</strong> {{ incident.aiPrediction }}
+          </div>
+        </div>
+        
+        <div class="affected-services">
+          <span class="services-label">Affected Services:</span>
+          <div class="services-list">
+            <span *ngFor="let service of incident.affectedServices" class="service-tag">
+              {{ service }}
+            </span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="incident-actions">
+        <button class="btn btn-primary">View Details</button>
+        <button class="btn btn-secondary">Assign</button>
+        <button class="btn btn-secondary">Update Status</button>
+        <button class="btn btn-solutions" (click)="openSolutions(incident.id)" 
+                [disabled]="incident.status !== 'Open'">Solutions</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Solutions Modal -->
+<div class="modal-overlay" *ngIf="showSolutionsModal" (click)="closeSolutions()">
+  <div class="solutions-modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>AI-Powered Solutions for {{ currentIncidentId }}</h3>
+      <button class="close-btn" (click)="closeSolutions()">&times;</button>
+    </div>
+    
+    <div class="modal-content">
+      <div class="solution-info">
+        <p> Gen AI model has analyzed the incident and suggested the following suggestions based on previous occurances of similar incidence</p>
+      </div>
+      
+      <div class="chart-container">
+        <div class="custom-tree-chart">
+          <div class="tree-root">
+            <div class="tree-node root-node">
+              <div class="node-content">
+                <span class="node-title">{{ treeData?.name }}</span>
+              </div>
+            </div>
+            
+            <div class="tree-branches">
+              <div *ngFor="let solution of currentSolutions" class="tree-branch">
+                <div class="branch-line"></div>
+                <div class="tree-node solution-node" [style.width.px]="solution.value * 3 + 120">
+                  <div class="node-content">
+                    <span class="node-title">{{ solution.name }}</span>
+                    <span class="node-percentage">{{ solution.value }}%</span>
+                  </div>
+                  
+                  <div *ngIf="solution.children && solution.children.length > 0" class="sub-branches">
+                    <div *ngFor="let child of solution.children" class="sub-branch">
+                      <div class="sub-branch-line"></div>
+                      <div class="tree-node child-node" [style.width.px]="child.value * 2 + 80">
+                        <div class="node-content">
+                          <span class="node-title">{{ child.name }}</span>
+                          <span class="node-percentage">{{ child.value }}%</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="solution-details">
+        <h4>Solution Details:</h4>
+        <div class="solution-item" *ngFor="let solution of currentSolutions">
+          <div class="solution-header">
+            <span class="solution-name">{{ solution.name }}</span>
+            <span class="solution-weight">{{ solution.value }}%</span>
+          </div>
+          <p class="solution-description">{{ solution.description }}</p>
+          <div class="solution-actions">
+            <button *ngIf="solution.value < 35" class="btn btn-warning btn-sm">Apply Solution</button>
+            <button *ngIf="solution.value >= 35" class="btn btn-success btn-sm" disabled>Solution Applied</button>
+            <button class="btn btn-secondary btn-sm">View Steps</button>
+            <button class="btn btn-info btn-sm">References</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

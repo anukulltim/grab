@@ -1,0 +1,14 @@
+// Main app layout
+.app-container {
+  min-height: calc(100vh - 140px); // Adjust for header and footer
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+// Global styles for professional look
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
