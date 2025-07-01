@@ -50,13 +50,11 @@ export class OpenIncidentsComponent implements OnInit {
   filterStatus: string = 'all';
   filterSeverity: string = 'all';
 
-  // Solutions modal properties
   showSolutionsModal: boolean = false;
   currentIncidentId: string = '';
   currentSolutions: any[] = [];
   treeData: any = null;
 
-  // Solutions data for different incident types
   solutionsData: any = {
     'INC-001': {
       name: 'UPI Gateway Solutions',

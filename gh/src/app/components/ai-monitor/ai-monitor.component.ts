@@ -46,7 +46,6 @@ export class AiMonitorComponent {
 
   selectedItem: string = 'open-incidents';
 
-  // Search modal properties
   showSearchModal: boolean = false;
   searchQuery: string = '';
   searchSuggestions: string[] = [
@@ -67,7 +66,6 @@ export class AiMonitorComponent {
   openSearch() {
     this.showSearchModal = true;
     this.searchQuery = '';
-    // Focus on search input after modal opens
     setTimeout(() => {
       const searchInput = document.querySelector('.search-input') as HTMLInputElement;
       if (searchInput) {
@@ -84,8 +82,7 @@ export class AiMonitorComponent {
   performSearch() {
     if (this.searchQuery.trim()) {
       console.log('Searching for:', this.searchQuery);
-      // TODO: Implement actual search functionality
-      // For now, just close the modal
+      
       this.closeSearch();
     }
   }
